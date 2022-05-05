@@ -9,6 +9,7 @@
 import serial
 import sys
 import time
+import adafruit_gps
 import string 
 from serial import SerialException
 import re
@@ -17,7 +18,48 @@ import RPi.GPIO as GPIO
 import mysql.connector
 
 
+#add in code to search for USB (USB 0 should work for all; you cannot plug it into a USB hub)...
+serial_port_name="/dev/ttyUSB4"
 
+#create serial instance to talk with USB GPS
+uart = serial.Serial(serial_port_name, baudrate=9600, timeout=10)
+
+# Create a GPS module instance.
+gps = adafruit_gps.GPS(uart, debug=False)  # Use UART/pyserial
+
+# Initialize the GPS module by changing what data it sends and at what rate.
+# These are NMEA extensions for PMTK_314_SET_NMEA_OUTPUT and
+# PMTK_220_SET_NMEA_UPDATERATE but you can send anything from here to adjust
+# the GPS module behavior:
+#   himport mysql.connectorttps://cdn-shop.adafruit.com/datasheets/PMTK_A11.pdf
+
+# Turn on the basic GGA and RMC info (what you typically want)
+gps.send_command(b"PMTK31cursor = db.cursor()4,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
+# Turn on just minimum info (RMC only, location):
+gps.send_command(b'PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
+# Turn off everything:
+# gps.send_command(b'PMTK314,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
+# Turn on everything (not all of it is parsed!)
+# gps.send_command(b'PMTK314,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0')
+
+# Set update rate to once every 1000ms (1hz) which is what you typically want.
+gps.send_command(b"PMTK220,1000")
+
+
+# Lines 67-76 are not used, for we are timestamping the data with the internal clock and not the GPS. This code left
+# for reference
+#def of the date time function
+def _format_datetime(datetime):
+    return "{:02}/{:02}/{} {:02}:{02}:{:02}".format(
+        datetime.tm_mon,
+        datetime.tm_mday,
+        datetime.tm_year,
+        datetime.tm_hour,
+        datetime.tm_min,
+        datetime.tm_sec,
+        )
+
+#temp section of code 
 def read_line():
     """
     taken from the ftdi library and modified to 
@@ -121,8 +163,11 @@ if __name__ == "__main__":
                             print('Data Saved')
                    
                    #Changes the time intervals (in seconds) between each measurement
-                            time.sleep(10)
+                            time.sleep(5)
          
          #The below code is needed for functionality of the rest of the script but s not used in practice
             except KeyboardInterrupt: 		# catches the ctrl-c command, which breaks the loop above
                 print("Continuous polling stopped")
+    
+      
+
