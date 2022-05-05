@@ -3,12 +3,20 @@
 # This code was written by Alex Kreitzer, Will Bradford, and Megan Caulfield for use in the 2021-22 Section 1 Buoy for Northrop Grumman
 
 import time
+# import serial
+# import adafruit_gps
 import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 
 # Connects to our database
 import mysql.connector
 
+
+
+
+
+
+#Database and RFID section of code
 db = mysql.connector.connect(
   host="localhost",
   user="JMUWAM",
