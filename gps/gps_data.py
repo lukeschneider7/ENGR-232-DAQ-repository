@@ -66,7 +66,7 @@ gps.send_command(b"PMTK220,1000")
                  # Lines 67-76 are not used, for we are timestamping the data with the internal clock and not the GPS. This code left
                  # for reference
 #def of the date time function
-# def _format_datetime(datetime):
+#    def _format_datetime(datetime):
 #     return "{:02}/{:02}/{} {:02}:{02}:{:02}".format(
 #         datetime.tm_mon,
 #         datetime.tm_mday,
@@ -94,7 +94,7 @@ while True:
         if not gps.has_fix:
 
             # Try again if we don't have a fix yet.
-            print("Connecting to satellite...")
+            print("Connecting to satellites...")
 
             #continue to loop (while)
             continue
